@@ -1,3 +1,6 @@
+# THIS IS AUTOMATICALLY DONE BY PACKAGE INSTALLER and .onLoad
+# BUT IT CAN SHOW HOW TO COMPILE AND LOAD A MODEL MANUALLY
+
 # ==============================================================================
 # > Compile Model
 # ==============================================================================
@@ -7,7 +10,7 @@ compile_model <- function() {
 
     prefix <- paste0(system.file("fortran", package = "RTMGreifensee"), "/")
 
-    shlib  <- paste0(prefix, "model.so")
+    shlib  <- paste0(prefix, "RTMGreifensee", .Platform$dynlib.ext)
 
     model    <- paste0(prefix, "model.f95")
     routines <- paste0(prefix, "setup_routines.f95")
@@ -34,9 +37,7 @@ compile_model <- function() {
 # ==============================================================================
 load_model <- function() {
 
-    # !!! replace with library.dynam !!!
-
-    shlib <- system.file("fortran/model.so", package = "RTMGreifensee")
+    shlib <- system.file(paste0("fortran/RTMGreifensee", .Platform$dynlib.ext), package = "RTMGreifensee")
 
     if (is.loaded("derivs")) {
         dyn.unload(shlib)
@@ -48,9 +49,7 @@ load_model <- function() {
 
 unload_model <- function() {
 
-    # !!! replace with library.dynam.unload !!!
-
-    shlib <- system.file("fortran/model.so", package = "RTMGreifensee")
+    shlib <- system.file(paste0("fortran/RTMGreifensee", .Platform$dynlib.ext), package = "RTMGreifensee")
 
     dyn.unload(shlib)
 
