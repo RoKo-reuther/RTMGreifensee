@@ -1,4 +1,5 @@
 #' @useDynLib RTMGreifensee
+NULL
 
 # Compilation of the model is automatically done during the package installation.
 # Loading the shared libraries is automatically done when the package is loaded.
