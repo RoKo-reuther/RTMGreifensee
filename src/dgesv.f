@@ -3695,9 +3695,9 @@
 *     ..
 *     .. Executable Statements ..
 *
-      WRITE( *, FMT = 9999 )SRNAME( 1:LEN_TRIM( SRNAME ) ), INFO
+!      WRITE( *, FMT = 9999 )SRNAME( 1:LEN_TRIM( SRNAME ) ), INFO
 *
-      STOP
+!      STOP
 *
  9999 FORMAT( ' ** On entry to ', A, ' parameter number ', I2, ' had ',
      $      'an illegal value' )
