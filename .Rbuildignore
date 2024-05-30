@@ -1,4 +1,5 @@
 ^data-raw$
-^R/app\.R$
 ^LICENSE\.md$
 ^tools$
+.Rprofile
+.gitignore

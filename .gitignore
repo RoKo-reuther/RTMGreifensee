@@ -1,0 +1,4 @@
+.Rprofile
+*.so
+*.o
+*.dll
