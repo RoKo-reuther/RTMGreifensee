@@ -2,3 +2,4 @@
 
 export(model_metadata)
 import(shiny)
+useDynLib(RTMGreifensee)
