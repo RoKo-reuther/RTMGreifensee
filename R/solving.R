@@ -148,6 +148,8 @@ solve_steady <- function(model_parameters, model_metadata = RTMGreifensee::model
         mass_balance_species_based <- massbalance_species_based(std, species, tag)
         mass_balance_element_based <- massbalance_element_based(std, mass_balance_species_based, model_parameters, tag)
 
+        integrated_reaction_rates  <- get_depth_integrated_reaction_rates(std, reactions, tag)
+
         # compose return list
         return(list(
             tag = tag,
@@ -155,7 +157,8 @@ solve_steady <- function(model_parameters, model_metadata = RTMGreifensee::model
             one_value_results = dfs$one_value_results,
             original = std,
             parameters = c(parms, forcings),
-            mass_balances = list(species_based = mass_balance_species_based, element_based = mass_balance_element_based)
+            mass_balances = list(species_based = mass_balance_species_based, element_based = mass_balance_element_based),
+            integrated_reaction_rates = integrated_reaction_rates
         ))
 
     } else {

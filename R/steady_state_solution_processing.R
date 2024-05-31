@@ -190,3 +190,26 @@ massbalance_element_based <- function(std, mass_balance_species_based, model_par
     ))
     
 }
+
+
+# ==============================================================================
+# > Depth-Integrated Reaction Rates (from original solution)
+# ==============================================================================
+get_depth_integrated_reaction_rates <- function(std, reactions, tag) {
+
+    # the model returns reaction rates in mol m-3_total_volume
+    # this function returns depth integrated reaction rates in mol m-2
+
+    integrate_rate <- function(reaction, std) {
+        sum(std[[reaction]] * diff(std$xint))
+    }
+
+    integrated_rates <- sapply(reactions, integrate_rate, std = std)
+
+    return(data.frame(
+        name = names(integrated_rates),
+        value = integrated_rates,
+        tag = tag,
+        row.names = NULL
+    ))
+}
