@@ -88,3 +88,34 @@ get_collective_element_based_detailed_massbalance <- function(std_list) {
     return(data)
 
 }
+
+
+# =============================================================================
+# > Change tag
+# =============================================================================
+change_tag <- function(std_or_sublist, new_tag) {
+
+    for (i in seq_along(std_or_sublist)) {
+
+        if (names(std_or_sublist)[i] == "tag") {
+
+            # change tag entry
+            std_or_sublist[[i]] <- new_tag
+
+        } else if (is.data.frame(std_or_sublist[[i]])) {
+
+            # change tag column in data.frames
+            std_or_sublist[[i]][["tag"]] <- new_tag
+
+        } else if (is.list(std_or_sublist[[i]])) {
+
+            # for further nedsted lists call function recursively
+            std_or_sublist[[i]] <- change_tag(std_or_sublist[[i]], new_tag)
+
+        }
+
+    }
+
+    return(std_or_sublist)
+
+}
