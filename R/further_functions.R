@@ -91,6 +91,28 @@ get_collective_element_based_detailed_massbalance <- function(std_list) {
 
 
 # =============================================================================
+# > Combine integrated_reaction_rates data-frames
+# =============================================================================
+get_collective_integrated_reaction_rates <- function(std_list) {
+
+    data <- data.frame()
+
+    # combine dataframes
+    for (i in seq_along(std_list)) {
+
+        data <- rbind(data, std_list[[i]][["integrated_reaction_rates"]])
+
+    }
+
+    data$name <- as.factor(data$name)
+    data$tag  <- as.factor(data$tag)
+
+    return(data)
+
+}
+
+
+# =============================================================================
 # > Change tag
 # =============================================================================
 change_tag <- function(std_or_sublist, new_tag) {
