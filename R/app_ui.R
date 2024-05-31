@@ -43,9 +43,22 @@ app_ui <- shinydashboard::dashboardPage(
             .scrollable_container_in_sidebar {
                 height: calc(93vh - 40px);
                 overflow-y: scroll;
-                scrollbar-width: none;
                 margin-top: 20px;
                 margin-bottom: 20px;
+            }
+
+            .scrollable_container_in_sidebar::-webkit-scrollbar {
+                width: 5px;
+                background: #222c33;
+            }
+
+            .scrollable_container_in_sidebar::-webkit-scrollbar-thumb {
+                background: #3D8CBB;
+                border-radius: 5px;
+            }
+
+            .scrollable_container_in_sidebar::-webkit-scrollbar-thumb:hover {
+                background: #0C709D;
             }
 
             section.sidebar .shiny-input-container {
