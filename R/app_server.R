@@ -15,6 +15,7 @@ app_server <- function(input, output, session) {
     rVs$species_based_mass_balance          <- get_collective_species_based_massbalance(isolate(rVs$std_list))
     rVs$element_based_mass_balance_overview <- get_collective_element_based_overview_massbalance(isolate(rVs$std_list))
     rVs$element_based_mass_balance_detailed <- get_collective_element_based_detailed_massbalance(isolate(rVs$std_list))
+    rVs$integrated_reaction_rates           <- get_collective_integrated_reaction_rates(isolate(rVs$std_list))
 
 
     #--------------------------------------------------------------------------
@@ -112,6 +113,7 @@ app_server <- function(input, output, session) {
         rVs$species_based_mass_balance <- get_collective_species_based_massbalance(rVs$std_list[input$active_tags])
         rVs$element_based_mass_balance_overview <- get_collective_element_based_overview_massbalance(rVs$std_list[input$active_tags])
         rVs$element_based_mass_balance_detailed <- get_collective_element_based_detailed_massbalance(rVs$std_list[input$active_tags])
+        rVs$integrated_reaction_rates           <- get_collective_integrated_reaction_rates(rVs$std_list)
 
     }) |> bindEvent(input$selectScenariosButton)
 
@@ -392,6 +394,22 @@ app_server <- function(input, output, session) {
             options = list(pageLength = nrow(rVs$element_based_mass_balance_detailed$Ca), dom = "t")
         ) |>
         DT::formatSignif(c("flux_up", "flux_down", "sumR_integrated"))
+    )
+
+
+    #--------------------------------------------------------------------------
+    # Depth Integrated Reaction Rates
+    #--------------------------------------------------------------------------
+    output$tbl_integrated_reaction_rates <- DT::renderDT(
+        DT::datatable(
+            rVs$integrated_reaction_rates,
+            rownames = FALSE,
+            filter  = "top",
+            fillContainer = TRUE,
+            class = "hover",
+            options = list(pageLength = nrow(rVs$integrated_reaction_rates), dom = "t")
+        ) |>
+        DT::formatSignif(c("value"))
     )
 
 }

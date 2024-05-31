@@ -14,7 +14,7 @@ app_ui <- shinydashboard::dashboardPage(
 
             .tab-content {
                 height: 89vh;
-                overflow-y: scroll;
+                overflow-y: auto;
             }
 
             .nav-tabs-custom {
@@ -78,6 +78,10 @@ app_ui <- shinydashboard::dashboardPage(
             }
 
             .shiny-file-input-progress {display: none;}
+
+            #tbl_integrated_reaction_rates {
+                margin: auto;
+            }
         '))),
         div(style = "height: 7vh; background-color: #3d8cbb;",
             tags$style(HTML('
@@ -153,12 +157,16 @@ app_ui <- shinydashboard::dashboardPage(
                 uiOutput("tableau_species_profiles")
             ),
             tabPanel(
-                title = "Reation Rates",
+                title = "Saturation",
+                uiOutput("saturation_profiles")
+            ),
+            tabPanel(
+                title = "Reation Rate Profiles",
                 uiOutput("reaction_rate_profiles")
             ),
             tabPanel(
-                title = "Saturation",
-                uiOutput("saturation_profiles")
+                title = "Depth Integrated Reation Rates",
+                DT::DTOutput("tbl_integrated_reaction_rates", height = "87vh", width = "800px")
             ),
             tabPanel(
                 title = "Mass Balances",
