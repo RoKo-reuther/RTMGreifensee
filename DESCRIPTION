@@ -11,12 +11,23 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Depends: 
     R (>= 2.10)
-LazyData: true
 Imports: 
+    bslib,
     dplyr,
     DT,
     echarts4r,
     marelac,
     rootSolve,
-    shiny,
-    shinydashboard
+    shiny
+LazyData: true
+Collate: 
+    'RTMGreifenseeApp.R'
+    'app_server.R'
+    'model_specification.R'
+    'app_ui.R'
+    'compile_and_load.R'
+    'data.R'
+    'further_functions.R'
+    'plotting.R'
+    'solving.R'
+    'steady_state_solution_processing.R'

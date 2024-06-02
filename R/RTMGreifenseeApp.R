@@ -1,4 +1,4 @@
-#' @import shiny
+
 
 # =============================================================================
 # > RUN THE APP
@@ -22,6 +22,6 @@
 #' @export
 RTMGreifenseeApp <- function() {
 
-    shinyApp(ui = app_ui, server = app_server)
+    shiny::shinyApp(ui = app_ui, server = app_server)
 
 }

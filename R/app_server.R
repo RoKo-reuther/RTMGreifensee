@@ -6,19 +6,18 @@ app_server <- function(input, output, session) {
     #--------------------------------------------------------------------------
     # Initialize
     #--------------------------------------------------------------------------
-    rVs <- reactiveValues()
+    rVs <- shiny::reactiveValues()
 
     rVs$std_list <- list(ref = RTMGreifensee::reference_state)
 
     rVs$collective_dataframe <- get_collective_profiles_dataframe(list(ref = RTMGreifensee::reference_state), RTMGreifensee::greifensee_data)
 
-    rVs$species_based_mass_balance          <- get_collective_species_based_massbalance(isolate(rVs$std_list))
-    rVs$element_based_mass_balance_overview <- get_collective_element_based_overview_massbalance(isolate(rVs$std_list))
-    rVs$element_based_mass_balance_detailed <- get_collective_element_based_detailed_massbalance(isolate(rVs$std_list))
-    rVs$integrated_reaction_rates           <- get_collective_integrated_reaction_rates(isolate(rVs$std_list))
+    rVs$species_based_mass_balance          <- get_collective_species_based_massbalance(shiny::isolate(rVs$std_list))
+    rVs$element_based_mass_balance_overview <- get_collective_element_based_overview_massbalance(shiny::isolate(rVs$std_list))
+    rVs$element_based_mass_balance_detailed <- get_collective_element_based_detailed_massbalance(shiny::isolate(rVs$std_list))
+    rVs$integrated_reaction_rates           <- get_collective_integrated_reaction_rates(shiny::isolate(rVs$std_list))
 
-
-    #--------------------------------------------------------------------------
+        #--------------------------------------------------------------------------
     # Helpers
     #--------------------------------------------------------------------------
     # create an parameter input-element
@@ -26,39 +25,31 @@ app_server <- function(input, output, session) {
         numericInput(parameter, label = parameter, value = RTMGreifensee::reference_state$parameters[parameter])
     }
 
-    # create profile-plot ouput element
-    plot_profile_output <- function(element) {
-        shinydashboard::box(
-            echarts4r::echarts4rOutput(paste0("profile_", element)),
-            width = 4
-        )
-    }
-
 
     #--------------------------------------------------------------------------
     # Parameter Panel Setup
     #--------------------------------------------------------------------------
-    output$reaction_parms <- renderUI({
+    output$reaction_parms <- shiny::renderUI({
 
-        output_list <- lapply(model_metadata$reaction_parms, create_parameter_input)
+        output_list <- lapply(RTMGreifensee::model_metadata$reaction_parms, create_parameter_input)
         # convert the list to a tagList - this is necessary for the list of items to display properly.
-        tagList(output_list)
+        shiny::tagList(output_list)
 
     })
 
-    output$boundary_conditions <- renderUI({
+    output$boundary_conditions <- shiny::renderUI({
 
-        output_list <- lapply(model_metadata$boundary_conditions, create_parameter_input)
+        output_list <- lapply(RTMGreifensee::model_metadata$boundary_conditions, create_parameter_input)
         # convert the list to a tagList - this is necessary for the list of items to display properly.
-        tagList(output_list)
+        shiny::tagList(output_list)
 
     })
 
-    output$environmental_parms <- renderUI({
+    output$environmental_parms <- shiny::renderUI({
 
-        output_list <- lapply(model_metadata$environmental_parms, create_parameter_input)
+        output_list <- lapply(RTMGreifensee::model_metadata$environmental_parms, create_parameter_input)
         # convert the list to a tagList - this is necessary for the list of items to display properly.
-        tagList(output_list)
+        shiny::tagList(output_list)
 
     })
 
@@ -66,9 +57,9 @@ app_server <- function(input, output, session) {
     #--------------------------------------------------------------------------
     # Steady-State Calculation
     #--------------------------------------------------------------------------
-    observe({
+    shiny::observe({
 
-        withProgress(message = "Calculating new scenario ...", {
+        shiny::withProgress(message = "Calculating new scenario ...", {
 
         parms_list <- list()
 
@@ -78,36 +69,36 @@ app_server <- function(input, output, session) {
 
         model_parameters <- do.call("set_parameters", parms_list)
 
-        setProgress(0.1)
+        shiny::setProgress(0.1)
     
         std <- solve_steady(model_parameters, tag = paste0("@", input$new_tag), initial = RTMGreifensee::reference_state$original$y)
 
         if (!is.null(std)) {
 
-            setProgress(0.8)
+            shiny::setProgress(0.8)
     
             rVs$std_list[[paste0("@", input$new_tag)]] <- std
 
-            updateSelectInput(session, "active_tags", choices = names(rVs$std_list), selected = input$active_tags)
+            shiny::updateSelectInput(session, "active_tags", choices = names(rVs$std_list), selected = input$active_tags)
 
-            setProgress(1.0)
+            shiny::setProgress(1.0)
             
         } else {
 
-            setProgress(1.0)
-            showNotification("Solving failed for this parameter-set.", type = "error")
+            shiny::setProgress(1.0)
+            shiny::showNotification("Solving failed for this parameter-set.", type = "error")
 
         }
 
         })
     
-    }) |> bindEvent(input$goButton)
+    }) |> shiny::bindEvent(input$goButton)
 
 
     #--------------------------------------------------------------------------
     # Active Scenario Selection
     #--------------------------------------------------------------------------
-    observe({
+    shiny::observe({
 
         rVs$collective_dataframe <- get_collective_profiles_dataframe(rVs$std_list[input$active_tags], RTMGreifensee::greifensee_data)
         rVs$species_based_mass_balance <- get_collective_species_based_massbalance(rVs$std_list[input$active_tags])
@@ -115,13 +106,13 @@ app_server <- function(input, output, session) {
         rVs$element_based_mass_balance_detailed <- get_collective_element_based_detailed_massbalance(rVs$std_list[input$active_tags])
         rVs$integrated_reaction_rates           <- get_collective_integrated_reaction_rates(rVs$std_list)
 
-    }) |> bindEvent(input$selectScenariosButton)
+    }) |> shiny::bindEvent(input$selectScenariosButton)
 
 
     #--------------------------------------------------------------------------
     # Download list of steady state scenarios
     #--------------------------------------------------------------------------
-    output$std_list_download <- downloadHandler(
+    output$std_list_download <- shiny::downloadHandler(
         filename = "std_list.rds",
         content = function(file) {
           saveRDS(rVs$std_list, file)
@@ -132,10 +123,10 @@ app_server <- function(input, output, session) {
     #--------------------------------------------------------------------------
     # Upload list of steady state scenarios
     #--------------------------------------------------------------------------
-    observe({
+    shiny::observe({
         rVs$std_list <- readRDS(input$std_list_input$datapath)
-        updateSelectInput(session, "active_tags", choices = names(rVs$std_list), selected = input$active_tags)
-    }) |> bindEvent(input$std_list_input)
+        shiny::updateSelectInput(session, "active_tags", choices = names(rVs$std_list), selected = input$active_tags)
+    }) |> shiny::bindEvent(input$std_list_input)
 
 
     #--------------------------------------------------------------------------
@@ -169,13 +160,6 @@ app_server <- function(input, output, session) {
 
     })}
 
-    # output species profiles
-    output$species_profiles <- renderUI({
-        # create output elements
-        plot_output_list <- lapply(model_metadata$species, plot_profile_output)
-        # convert the list to a tagList - this is necessary for the list of items to display properly.
-        tagList(plot_output_list)
-    })
 
     #--------------------------------------------------------------------------
     # Plots: Speciation Profiles
@@ -209,15 +193,6 @@ app_server <- function(input, output, session) {
 
     })}
 
-    # output species profiles
-    output$tableau_species_profiles <- renderUI({
-        # create output elements
-        plot_output_list <- lapply(model_metadata$tableau_species, plot_profile_output)
-        # convert the list to a tagList - this is necessary for the list of items to display properly.
-        tagList(plot_output_list)
-
-    })
-
 
     #--------------------------------------------------------------------------
     # Plots: Reaction Rate Profiles
@@ -239,15 +214,6 @@ app_server <- function(input, output, session) {
 
     })}
 
-    # output profiles
-    output$reaction_rate_profiles <- renderUI({
-        # create output elements
-        plot_output_list <- lapply(model_metadata$reactions, plot_profile_output)
-        # convert the list to a tagList - this is necessary for the list of items to display properly.
-        tagList(plot_output_list)
-
-    })
-
 
     #--------------------------------------------------------------------------
     # Plots: Saturation Profiles
@@ -268,15 +234,6 @@ app_server <- function(input, output, session) {
         )
 
     })}
-
-    # output profiles
-    output$saturation_profiles <- renderUI({
-        # create output elements
-        plot_output_list <- lapply(model_metadata$omegas, plot_profile_output)
-        # convert the list to a tagList - this is necessary for the list of items to display properly.
-        tagList(plot_output_list)
-
-    })
 
 
     #--------------------------------------------------------------------------
