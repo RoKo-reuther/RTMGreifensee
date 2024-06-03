@@ -7,6 +7,11 @@
 #------------------------------------------------------------------------------
 # Sidebar
 #------------------------------------------------------------------------------
+# create an parameter input-element
+create_parameter_input <- function(parameter) {
+    shiny::numericInput(parameter, label = parameter, value = 0.0)
+}
+
 new_scenario_control <- bslib::card(
     fill = FALSE,
     class = "border-2",
@@ -23,18 +28,22 @@ new_scenario_control <- bslib::card(
 
 parameters_navset <- bslib::navset_card_underline(
     title = new_scenario_control,
+    id = "navset_sidebar",
     height = "calc(100vh - 48.88px)",
     bslib::nav_panel(
         title = "Reaction Parameters",
-        shiny::uiOutput("reaction_parms")
+        shiny::tagList(lapply(model_metadata$reaction_parms, create_parameter_input))
+        #shiny::uiOutput("reaction_parms")
     ),
     bslib::nav_panel(
         title = "Boundary Conditions",
-        shiny::uiOutput("boundary_conditions")
+        shiny::tagList(lapply(model_metadata$boundary_conditions, create_parameter_input))
+        #shiny::uiOutput("boundary_conditions")
     ),
     bslib::nav_panel(
-        title = "Environmental Parameters",
-        shiny::uiOutput("environmental_parms")
+        title = "Grid & Transport",
+        shiny::tagList(lapply(model_metadata$environmental_parms, create_parameter_input))
+        #shiny::uiOutput("environmental_parms")
     )
 )
 
@@ -68,16 +77,21 @@ im_and_export_std_list <- bslib::card(
     )
 )
 
-scenario_list_control_row <- bslib::layout_column_wrap(
-    width = 1/2,
-    select_active_scenarios,
-    im_and_export_std_list 
+select_parameters <- bslib::card(
+    fill = TRUE,
+    bslib::card_header("Select Parameter-Set"),
+    bslib::layout_columns(
+        col_widths = c(9, 3),
+        shiny::selectInput("parameter_set", NULL, c("ref"), "ref", multiple = FALSE, selectize = TRUE, width = "100%"),
+        shiny::actionButton("selectParameterSet", label = "select", width = "100%")
+    )
 )
 
 panel_scenarios <- bslib::nav_panel(
-    title = "Scenario List",
+    title = "Scenarios",
     select_active_scenarios,
-    im_and_export_std_list
+    im_and_export_std_list,
+    select_parameters
 )
 
 
@@ -227,6 +241,7 @@ app_ui <- bslib::page_navbar(
     header = shiny::tags$style(shiny::HTML(
         '
         .navbar-static-top {padding-top: 3px; padding-bottom: 0px;}
+        #navset_sidebar .nav-item {margin: auto;}
         '
     )),
     panel_scenarios,

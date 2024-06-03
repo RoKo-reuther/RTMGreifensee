@@ -17,41 +17,28 @@ app_server <- function(input, output, session) {
     rVs$element_based_mass_balance_detailed <- get_collective_element_based_detailed_massbalance(shiny::isolate(rVs$std_list))
     rVs$integrated_reaction_rates           <- get_collective_integrated_reaction_rates(shiny::isolate(rVs$std_list))
 
-        #--------------------------------------------------------------------------
-    # Helpers
+
     #--------------------------------------------------------------------------
-    # create an parameter input-element
-    create_parameter_input <- function(parameter) {
-        numericInput(parameter, label = parameter, value = RTMGreifensee::reference_state$parameters[parameter])
+    # Parameter Panel Setup - Set Values
+    #--------------------------------------------------------------------------
+    update_parameter_input <- function(parameter, std) {
+        shiny::updateNumericInput(session, parameter, value = std$parameters[[parameter]])
     }
 
+    update_parameter_inputs <- function(std) {
+        lapply(RTMGreifensee::model_metadata$reaction_parms, update_parameter_input, std = std)
+        lapply(RTMGreifensee::model_metadata$boundary_conditions, update_parameter_input, std = std)
+        lapply(RTMGreifensee::model_metadata$environmental_parms, update_parameter_input, std = std)
+    }
 
-    #--------------------------------------------------------------------------
-    # Parameter Panel Setup
-    #--------------------------------------------------------------------------
-    output$reaction_parms <- shiny::renderUI({
+    # Initialize with reference_parameters
+    update_parameter_inputs(RTMGreifensee::reference_state)
 
-        output_list <- lapply(RTMGreifensee::model_metadata$reaction_parms, create_parameter_input)
-        # convert the list to a tagList - this is necessary for the list of items to display properly.
-        shiny::tagList(output_list)
+    shiny::observe({
 
-    })
+        update_parameter_inputs(rVs$std_list[[input$parameter_set]])
 
-    output$boundary_conditions <- shiny::renderUI({
-
-        output_list <- lapply(RTMGreifensee::model_metadata$boundary_conditions, create_parameter_input)
-        # convert the list to a tagList - this is necessary for the list of items to display properly.
-        shiny::tagList(output_list)
-
-    })
-
-    output$environmental_parms <- shiny::renderUI({
-
-        output_list <- lapply(RTMGreifensee::model_metadata$environmental_parms, create_parameter_input)
-        # convert the list to a tagList - this is necessary for the list of items to display properly.
-        shiny::tagList(output_list)
-
-    })
+    }) |> shiny::bindEvent(input$selectParameterSet)
 
 
     #--------------------------------------------------------------------------
@@ -80,6 +67,7 @@ app_server <- function(input, output, session) {
             rVs$std_list[[paste0("@", input$new_tag)]] <- std
 
             shiny::updateSelectInput(session, "active_tags", choices = names(rVs$std_list), selected = input$active_tags)
+            shiny::updateSelectInput(session, "parameter_set", choices = names(rVs$std_list), selected = input$parameter_set)
 
             shiny::setProgress(1.0)
             
@@ -124,8 +112,11 @@ app_server <- function(input, output, session) {
     # Upload list of steady state scenarios
     #--------------------------------------------------------------------------
     shiny::observe({
+
         rVs$std_list <- readRDS(input$std_list_input$datapath)
         shiny::updateSelectInput(session, "active_tags", choices = names(rVs$std_list), selected = input$active_tags)
+        shiny::updateSelectInput(session, "parameter_set", choices = names(rVs$std_list), selected = input$parameter_set)
+
     }) |> shiny::bindEvent(input$std_list_input)
 
 
