@@ -407,7 +407,7 @@ SUBROUTINE derivs (neq, t, y, ydot, yout, ip)
               & nothing_real, D_Mn2_int, v_por_int, AFDW, por_mid, por_int, A, &
               & A_int, dx, dxaux, TRAN_Mn2, FLUX_Mn2)
 
-  call tran1d(N_grid, Fe2, 3, 3, Fe2_up, Fe2_down, nothing_real,               &
+  call tran1d(N_grid, Fe2, 3, 4, Fe2_up, Fe2_down, nothing_real,               &
               & nothing_real, D_Fe2_int, v_por_int, AFDW, por_mid, por_int, A, &
               & A_int, dx, dxaux, TRAN_Fe2, FLUX_Fe2)
 
