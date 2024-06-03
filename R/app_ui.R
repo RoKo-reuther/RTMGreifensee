@@ -236,7 +236,7 @@ panel_mass_balances <- bslib::nav_panel(
 #.shiny-file-input-progress {display: none;}
 app_ui <- bslib::page_navbar(
     theme = bslib::bs_theme(preset = "lux", secondary = "#343b41", version = 5),
-    title = "RTM",
+    title = NULL,
     sidebar = dashboard_sidebar,
     header = shiny::tags$style(shiny::HTML(
         '
@@ -244,10 +244,12 @@ app_ui <- bslib::page_navbar(
         #navset_sidebar .nav-item {margin: auto;}
         '
     )),
+    bslib::nav_spacer(),
     panel_scenarios,
     panel_concentrations,
     panel_saturation,
     panel_reaction_rate_profiles,
     panel_integrated_reaction_rates,
-    panel_mass_balances
+    panel_mass_balances,
+    bslib::nav_spacer()
 )
